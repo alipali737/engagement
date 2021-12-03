@@ -8,13 +8,15 @@ except ImportError:
     print('Selenium not installed! Attempting to install module!')
     os.system('pip3 install selenium')
     from selenium import webdriver
-
+    
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 # TODO : Add way to validate engagement
 # TODO : Validate its actually on a login page or log out first
+
+standardDelay = 30
 
 # Selenium Implementation #
 # Create and return a new chrome browser
@@ -29,20 +31,20 @@ def BrowserLoginAttempt(browser):
     # Open the login page
     browser.get(("https://winchester.instructure.com/"))
 
-    # Get the input field elements
-    usernameField = browser.find_element(By.ID,"userNameInput")
-    passwordField = browser.find_element(By.ID,"passwordInput")
+    # Get the input field elements (Waits for username field to be loaded before trying)
+    usernameField = WebDriverWait(browser, standardDelay).until(EC.presence_of_element_located((By.ID, "userNameInput")))
+    passwordField = WebDriverWait(browser, standardDelay).until(EC.presence_of_element_located((By.ID, "passwordInput")))
 
     # Fill the username and password
     usernameField.send_keys(creds[0])
     passwordField.send_keys(creds[1])
 
     # Find and click submit button
-    submitButton = browser.find_element(By.ID,"submitButton")
-    submitButton.click()
+    # submitButton = browser.find_element(By.ID,"submitButton")
+    # submitButton.click()
 
-    # Wait for a max of 10 seconds for the canvas page to load
-    _ = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.ID, "application")))
+    # Wait for a max of {standardDelay} seconds for the canvas page to load
+    _ = WebDriverWait(browser, standardDelay).until(EC.presence_of_element_located((By.ID, "application")))
 
     print("Logged in!")
 
@@ -65,8 +67,8 @@ def OpenRandomCanvasResource(browser):
     resourceURL += "/items/"+itemID.group(0)
     browser.get(resourceURL)
 
-    # Wait for a max of 10 seconds for the canvas page to load
-    _ = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.ID, "application")))
+    # Wait for a max of {standardDelay} seconds for the canvas page to load
+    _ = WebDriverWait(browser, standardDelay).until(EC.presence_of_element_located((By.ID, "application")))
 
     print("Resource Accessed!")
 
@@ -78,6 +80,10 @@ def BrowserLogout(browser):
     # Find and click the logout button
     logoutButton = browser.find_element(By.ID,"Button--logout-confirm")
     logoutButton.click()
+
+    # Wait for logged out screen
+    _ = WebDriverWait(browser, standardDelay).until(EC.presence_of_element_located((By.ID, "openingMessage")))
+
     print("logged out!")
 
 # Get username and password as touple
@@ -106,7 +112,7 @@ def GetCreds():
 if __name__ == "__main__":
     creds = GetCreds()
     browser = CreateBrowser()
-    BrowserLoginAttempt(browser)
+    BrowserLoginAttempt(browser)    
     OpenRandomCanvasResource(browser)
     BrowserLogout(browser)
     browser.quit()
