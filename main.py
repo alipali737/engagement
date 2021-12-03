@@ -1,7 +1,14 @@
 import os, platform
 import random as rd
 import re as regex
-from selenium import webdriver
+
+try:
+    from selenium import webdriver
+except ImportError:
+    print('Selenium not installed! Attempting to install module!')
+    os.system('pip3 install selenium')
+    from selenium import webdriver
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
