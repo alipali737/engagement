@@ -5,7 +5,7 @@ import re as regex
 try:
     from selenium import webdriver
 except ImportError:
-    print('Selenium not installed! Attempting to install module!')
+    print('Selenium not installed! Attempting to install module with "pip3 install selenium"!')
     os.system('pip3 install selenium')
     from selenium import webdriver
     
@@ -89,15 +89,15 @@ def BrowserLogout(browser):
 # Get username and password as touple
 def GetCreds():
     # Add your winchester student email here
-    username = "...@unimail.winchester.ac.uk"
+    username = "a.painter.21@unimail.winchester.ac.uk"
 
     # Add you password here if you wish to hardcode them otherwise leave blank for pull from 1password CLI
     password = ""
 
     # Test if password is blank, if so attempt to get from 1password CLI
     # To setup please configure the vars below
-    opSessionName = ""
-    opUniLoginItemName = ""
+    opSessionName = "ibm"
+    opUniLoginItemName = "UNI_LOGIN"
 
     if password == "":
         # If the platform is windows 'eval' doesn't exist
