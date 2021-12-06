@@ -1,6 +1,13 @@
-import os, platform
+import os, platform, time
 import random as rd
 import re as regex
+
+try:
+    import schedule
+except ImportError:
+    print('Schedule not installed! Attempting to install module with "pip3 install schedule"!')
+    os.system('pip3 install schedule')
+    import schedule
 
 try:
     from selenium import webdriver
@@ -90,14 +97,14 @@ def BrowserLogout(browser):
 # Get username and password as touple
 def GetCreds():
     # Add your winchester student email here
-    username = "...21@unimail.winchester.ac.uk"
+    username = "a.painter.21@unimail.winchester.ac.uk"
 
     # Add you password here if you wish to hardcode them otherwise leave blank for pull from 1password CLI
     password = ""
 
     # To setup one password CLI please configure the vars below
-    opSessionName = ""
-    opUniLoginItemName = ""
+    opSessionName = "ibm"
+    opUniLoginItemName = "UNI_LOGIN"
 
     # Test if password is blank, if so attempt to get from 1password CLI
     if password == "":
@@ -110,12 +117,31 @@ def GetCreds():
 
     return username, password
 
-if __name__ == "__main__":
-    creds = GetCreds()
+def Main():
     browser = CreateBrowser()
     BrowserLoginAttempt(browser)    
     for i in range(5):
         OpenRandomCanvasResource(browser)
     BrowserLogout(browser)
     browser.quit()
+
+if __name__ == "__main__":
+    # Get credentials for the login
+    creds = GetCreds()
+
+    # Set to false if you want the scheduler turned off
+    scheduler = True
+
+    if scheduler:
+        # Setup scheduler to run every 3-5 hours (random delay)
+        schedule.every(3).to(5).hour.do(Main)
+
+        # Create a loop for the scheduler
+        while True:
+            # Run the schedules as defined
+            schedule.run_prending()
+            # Wait 1 minute before checking time again
+            time.sleep(60)
+    else:
+        Main()
 
