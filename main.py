@@ -40,8 +40,9 @@ def BrowserLoginAttempt(browser):
     passwordField.send_keys(creds[1])
 
     # Find and click submit button
-    # submitButton = browser.find_element(By.ID,"submitButton")
-    # submitButton.click()
+    if platform.system() == "Windows":
+        submitButton = browser.find_element(By.ID,"submitButton")
+        submitButton.click()
 
     # Wait for a max of {standardDelay} seconds for the canvas page to load
     _ = WebDriverWait(browser, standardDelay).until(EC.presence_of_element_located((By.ID, "application")))
@@ -94,11 +95,11 @@ def GetCreds():
     # Add you password here if you wish to hardcode them otherwise leave blank for pull from 1password CLI
     password = ""
 
-    # Test if password is blank, if so attempt to get from 1password CLI
-    # To setup please configure the vars below
+    # To setup one password CLI please configure the vars below
     opSessionName = ""
     opUniLoginItemName = ""
 
+    # Test if password is blank, if so attempt to get from 1password CLI
     if password == "":
         # If the platform is windows 'eval' doesn't exist
         if platform.system() == "Windows":
