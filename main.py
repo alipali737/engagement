@@ -1,4 +1,4 @@
-import os, platform, time
+import os, platform, time, subprocess
 import random as rd
 import re as regex
 
@@ -100,7 +100,7 @@ def GetCreds():
     username = "a.painter.21@unimail.winchester.ac.uk"
 
     # Add you password here if you wish to hardcode them otherwise leave blank for pull from 1password CLI
-    password = ""
+    password = "abc"
 
     # To setup one password CLI please configure the vars below
     opSessionName = "ibm"
@@ -110,10 +110,10 @@ def GetCreds():
     if password == "":
         # If the platform is windows 'eval' doesn't exist
         if platform.system() == "Windows":
-            stream = os.popen("Invoke-Expression $(op signin %s) && op get item --fields password %s" %(opSessionName, opUniLoginItemName))
+            password = subprocess.run(["powershell", "-Command", "Invoke-Expression $(op signin %s) && op get item --fields password %s" %(opSessionName, opUniLoginItemName)], capture_output=True)
         else:
             stream = os.popen("eval $(op signin %s) && op get item --fields password %s" %(opSessionName, opUniLoginItemName))
-        password = stream.read()
+            password = stream.read()
 
     return username, password
 
@@ -130,16 +130,19 @@ if __name__ == "__main__":
     creds = GetCreds()
 
     # Set to false if you want the scheduler turned off
-    scheduler = True
+    scheduler = False
+    minHours = 3
+    maxHours = 5
 
     if scheduler:
         # Setup scheduler to run every 3-5 hours (random delay)
-        schedule.every(3).to(5).hour.do(Main)
+        print ("Scheduler set to run every %d-%d hours. Please just leave this running in the background!" %(minHours, maxHours))
+        schedule.every(minHours).to(maxHours).hours.do(Main)
 
         # Create a loop for the scheduler
         while True:
             # Run the schedules as defined
-            schedule.run_prending()
+            schedule.run_pending()
             # Wait 1 minute before checking time again
             time.sleep(60)
     else:
