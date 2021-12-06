@@ -89,15 +89,15 @@ def BrowserLogout(browser):
 # Get username and password as touple
 def GetCreds():
     # Add your winchester student email here
-    username = "a.painter.21@unimail.winchester.ac.uk"
+    username = "...21@unimail.winchester.ac.uk"
 
     # Add you password here if you wish to hardcode them otherwise leave blank for pull from 1password CLI
     password = ""
 
     # Test if password is blank, if so attempt to get from 1password CLI
     # To setup please configure the vars below
-    opSessionName = "ibm"
-    opUniLoginItemName = "UNI_LOGIN"
+    opSessionName = ""
+    opUniLoginItemName = ""
 
     if password == "":
         # If the platform is windows 'eval' doesn't exist
@@ -113,7 +113,8 @@ if __name__ == "__main__":
     creds = GetCreds()
     browser = CreateBrowser()
     BrowserLoginAttempt(browser)    
-    OpenRandomCanvasResource(browser)
+    for i in range(5):
+        OpenRandomCanvasResource(browser)
     BrowserLogout(browser)
     browser.quit()
 
