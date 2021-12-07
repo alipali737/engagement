@@ -168,6 +168,8 @@ if __name__ == "__main__":
         print ("Scheduler set to run every %d-%d hours. Please just leave this running in the background!" %(minHours, maxHours))
         schedule.every(minHours).to(maxHours).hours.do(Main)
 
+        Main()
+
         # Create a loop for the scheduler
         while True:
             # Run the schedules as defined
