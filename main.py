@@ -31,7 +31,7 @@ standardDelay = 30
 def CreateBrowser():
     # Define chrome options for headless
     options = Options()
-    options.headless = True
+    options.headless = args.headless
 
     # Create a new chrome instance
     browser = webdriver.Chrome("chromedriver", options=options)
@@ -105,7 +105,7 @@ def BrowserLogout(browser):
 def GetCreds():
     # Add your winchester student email here
     if args.username == "":
-        username = "...21@unimail.winchester.ac.uk"
+        username = "a.painter.21@unimail.winchester.ac.uk"
     else:
         username = args.username
 
@@ -116,8 +116,8 @@ def GetCreds():
         password = args.password
 
     # To setup one password CLI please configure the vars below
-    opSessionName = ""
-    opUniLoginItemName = ""
+    opSessionName = "ibm"
+    opUniLoginItemName = "UNI_LOGIN"
 
     # Test if password is blank, if so attempt to get from 1password CLI
     if password == "":
@@ -145,11 +145,13 @@ if __name__ == "__main__":
 
     # Add the arguments
     argparser.add_argument("-s","--schedule", dest="scheduler", action="store_true", default=False, help="Whether to enable the scheduler")
-    argparser.add_argument("--minHours", dest="minHours", action="store", default=3, help="Minimum amount of hours for the scheduler (Only has effect is scheduler is enabled)")
-    argparser.add_argument("--maxHours", dest="maxHours", action="store", default=5, help="Maximum amount of hours for the scheduler (Only has effect is scheduler is enabled)")
+    argparser.add_argument("--min-hours", dest="minHours", action="store", default=3, help="Minimum amount of hours for the scheduler (Only has effect is scheduler is enabled)")
+    argparser.add_argument("--max-hours", dest="maxHours", action="store", default=5, help="Maximum amount of hours for the scheduler (Only has effect is scheduler is enabled)")
 
     argparser.add_argument("-u","--username", dest="username", action="store", default="", help="Username for the login")
     argparser.add_argument("-p","--password", dest="password", action="store", default="", help="Password for the login")
+
+    argparser.add_argument("--not-headless", dest="headless", action="store_false", default=True, help="Disable headless running of the browser")
 
     # Execute the parse_args() method to handle the arguments given
     args = argparser.parse_args()
