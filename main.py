@@ -1,4 +1,4 @@
-import os, platform, time, subprocess
+import os, platform, time, subprocess, argparse
 import random as rd
 import re as regex
 
@@ -19,6 +19,7 @@ except ImportError:
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
 
 # TODO : Add way to validate engagement
 # TODO : Validate its actually on a login page or log out first
@@ -28,8 +29,12 @@ standardDelay = 30
 # Selenium Implementation #
 # Create and return a new chrome browser
 def CreateBrowser():
+    # Define chrome options for headless
+    options = Options()
+    options.headless = True
+
     # Create a new chrome instance
-    browser = webdriver.Chrome()
+    browser = webdriver.Chrome("chromedriver", options=options)
     print("Browser created!")
     return browser
 
@@ -47,9 +52,11 @@ def BrowserLoginAttempt(browser):
     passwordField.send_keys(creds[1])
 
     # Find and click submit button
-    if platform.system() == "Windows":
+    try:
         submitButton = browser.find_element(By.ID,"submitButton")
         submitButton.click()
+    except:
+        pass
 
     # Wait for a max of {standardDelay} seconds for the canvas page to load
     _ = WebDriverWait(browser, standardDelay).until(EC.presence_of_element_located((By.ID, "application")))
@@ -97,14 +104,20 @@ def BrowserLogout(browser):
 # Get username and password as touple
 def GetCreds():
     # Add your winchester student email here
-    username = "a.painter.21@unimail.winchester.ac.uk"
+    if args.username == "":
+        username = "...21@unimail.winchester.ac.uk"
+    else:
+        username = args.username
 
     # Add you password here if you wish to hardcode them otherwise leave blank for pull from 1password CLI
-    password = "abc"
+    if args.password == "":
+        password = ""
+    else:
+        password = args.password
 
     # To setup one password CLI please configure the vars below
-    opSessionName = "ibm"
-    opUniLoginItemName = "UNI_LOGIN"
+    opSessionName = ""
+    opUniLoginItemName = ""
 
     # Test if password is blank, if so attempt to get from 1password CLI
     if password == "":
@@ -126,13 +139,27 @@ def Main():
     browser.quit()
 
 if __name__ == "__main__":
+
+    # Create the argument parser
+    argparser = argparse.ArgumentParser(description="Bot to increase canvas engagement")
+
+    # Add the arguments
+    argparser.add_argument("-s","--schedule", dest="scheduler", action="store_true", default=False, help="Whether to enable the scheduler")
+    argparser.add_argument("--minHours", dest="minHours", action="store", default=3, help="Minimum amount of hours for the scheduler (Only has effect is scheduler is enabled)")
+    argparser.add_argument("--maxHours", dest="maxHours", action="store", default=5, help="Maximum amount of hours for the scheduler (Only has effect is scheduler is enabled)")
+
+    argparser.add_argument("-u","--username", dest="username", action="store", default="", help="Username for the login")
+    argparser.add_argument("-p","--password", dest="password", action="store", default="", help="Password for the login")
+
+    # Execute the parse_args() method to handle the arguments given
+    args = argparser.parse_args()
+
+    scheduler = args.scheduler
+    minHours = args.minHours
+    maxHours = args.maxHours
+
     # Get credentials for the login
     creds = GetCreds()
-
-    # Set to false if you want the scheduler turned off
-    scheduler = False
-    minHours = 3
-    maxHours = 5
 
     if scheduler:
         # Setup scheduler to run every 3-5 hours (random delay)
